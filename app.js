@@ -47,17 +47,21 @@ function showCategories() {
   const categories = Object.keys(allImages).sort();
 
   if (categories.length === 0) {
-    container.innerHTML = '<p class="text-center">Kategori bulunamadı.</p>';
+    container.innerHTML = '<p class="text-center">Galeri bulunamadı.</p>';
     return;
   }
 
+  const section = document.createElement('div');
+  section.className = 'category-section';
+
+  const title = document.createElement('h2');
+  title.className = 'category-title';
+  title.textContent = 'Galeriler';
+
   const row = document.createElement('div');
-  row.className = 'row';
+  row.className = 'category-row';
 
   categories.forEach(category => {
-    const col = document.createElement('div');
-    col.className = 'col-md-3 col-sm-4 col-6 mb-4';
-
     const card = document.createElement('div');
     card.className = 'category-card';
     card.addEventListener('click', () => showCategoryImages(category));
@@ -72,8 +76,8 @@ function showCategories() {
     img.className = 'category-card-img';
     img.loading = 'lazy';
 
-    const cardBody = document.createElement('div');
-    cardBody.className = 'category-card-body';
+    const overlay = document.createElement('div');
+    overlay.className = 'category-card-overlay';
 
     const title = document.createElement('h3');
     title.className = 'category-card-title';
@@ -83,15 +87,16 @@ function showCategories() {
     count.className = 'category-card-count';
     count.textContent = `${allImages[category].length} resim`;
 
-    cardBody.appendChild(title);
-    cardBody.appendChild(count);
+    overlay.appendChild(title);
+    overlay.appendChild(count);
     card.appendChild(img);
-    card.appendChild(cardBody);
-    col.appendChild(card);
-    row.appendChild(col);
+    card.appendChild(overlay);
+    row.appendChild(card);
   });
 
-  container.appendChild(row);
+  section.appendChild(title);
+  section.appendChild(row);
+  container.appendChild(section);
 }
 
 // Kategori resimlerini göster
@@ -129,12 +134,9 @@ function renderCategory(category, images) {
   title.textContent = category;
 
   const row = document.createElement('div');
-  row.className = 'row';
+  row.className = 'gallery-row';
 
   images.forEach((image, index) => {
-    const col = document.createElement('div');
-    col.className = 'col-md-4 col-sm-6 col-12';
-
     const galleryItem = document.createElement('div');
     galleryItem.className = 'gallery-item';
     galleryItem.setAttribute('data-category', category);
@@ -153,8 +155,7 @@ function renderCategory(category, images) {
     galleryItem.appendChild(img);
     galleryItem.addEventListener('click', () => openModal(category, index));
 
-    col.appendChild(galleryItem);
-    row.appendChild(col);
+    row.appendChild(galleryItem);
   });
 
   section.appendChild(title);

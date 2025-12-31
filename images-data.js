@@ -5,6 +5,10 @@
 const allImagesData = {
   "Angle": [
     {
+      "name": "cover.png",
+      "path": "Picture/Angle/cover.png"
+    },
+    {
       "name": "Whisk_03eab1f912d8820a0f142ccbddc9ccc5dr.png",
       "path": "Picture/Angle/Whisk_03eab1f912d8820a0f142ccbddc9ccc5dr.png"
     },
@@ -385,10 +389,6 @@ const allImagesData = {
       "path": "Picture/Angle/Whisk_d7b8790fccc6dc18a244616b7dcd963edr.png"
     },
     {
-      "name": "Whisk_db94339b156b50cb87f4c687c3996350dr.png",
-      "path": "Picture/Angle/Whisk_db94339b156b50cb87f4c687c3996350dr.png"
-    },
-    {
       "name": "Whisk_e30b733198b960e9d84454742874cae3dr.png",
       "path": "Picture/Angle/Whisk_e30b733198b960e9d84454742874cae3dr.png"
     },
@@ -446,6 +446,10 @@ const allImagesData = {
     }
   ],
   "Bus": [
+    {
+      "name": "cover.png",
+      "path": "Picture/Bus/cover.png"
+    },
     {
       "name": "Whisk_043f582212c1ebe8aa74b244f3e31a49dr.png",
       "path": "Picture/Bus/Whisk_043f582212c1ebe8aa74b244f3e31a49dr.png"
@@ -577,10 +581,6 @@ const allImagesData = {
     {
       "name": "Whisk_8c0a73e6457a5fa87b944ded291efd55dr.png",
       "path": "Picture/Bus/Whisk_8c0a73e6457a5fa87b944ded291efd55dr.png"
-    },
-    {
-      "name": "Whisk_8ea27caed026758b2a848dfb21f2b2c1dr.png",
-      "path": "Picture/Bus/Whisk_8ea27caed026758b2a848dfb21f2b2c1dr.png"
     },
     {
       "name": "Whisk_9457f78451fd14f94ad4d76caed3c24ddr.png",
@@ -725,10 +725,6 @@ const allImagesData = {
       "path": "Picture/Sherice/1417851583.jpg"
     },
     {
-      "name": "1615266631.jpg",
-      "path": "Picture/Sherice/1615266631.jpg"
-    },
-    {
       "name": "1693972982.jpg",
       "path": "Picture/Sherice/1693972982.jpg"
     },
@@ -815,9 +811,17 @@ const allImagesData = {
     {
       "name": "881180814.jpg",
       "path": "Picture/Sherice/881180814.jpg"
+    },
+    {
+      "name": "cover.jpg",
+      "path": "Picture/Sherice/cover.jpg"
     }
   ],
   "Sport": [
+    {
+      "name": "cover.png",
+      "path": "Picture/Sport/cover.png"
+    },
     {
       "name": "Whisk_0322d410756038aa9f84fbeaf91c0221dr.png",
       "path": "Picture/Sport/Whisk_0322d410756038aa9f84fbeaf91c0221dr.png"
@@ -921,10 +925,6 @@ const allImagesData = {
     {
       "name": "Whisk_3cdf409848b9e23b27a465caa3883b7fdr.png",
       "path": "Picture/Sport/Whisk_3cdf409848b9e23b27a465caa3883b7fdr.png"
-    },
-    {
-      "name": "Whisk_3df9e1f7737b6c4a2a14d3c57f724487dr.png",
-      "path": "Picture/Sport/Whisk_3df9e1f7737b6c4a2a14d3c57f724487dr.png"
     },
     {
       "name": "Whisk_4b4b772f08b5e5fb30944a4ab80ee9b5dr.png",

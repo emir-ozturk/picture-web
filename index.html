@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resim Galerisi</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .category-section {
+      margin-bottom: 4rem;
+    }
+
+    .category-title {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+      color: #212529;
+      text-transform: capitalize;
+      border-bottom: 3px solid #0d6efd;
+      padding-bottom: 0.5rem;
+    }
+
+    .gallery-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+
+    .gallery-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.05);
+    }
+
+    .modal-fullscreen {
+      background-color: rgba(0, 0, 0, 0.95);
+    }
+
+    .modal-fullscreen .modal-content {
+      background: transparent;
+      border: none;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-image-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-image-container img {
+      max-width: 100%;
+      max-height: 100vh;
+      object-fit: contain;
+    }
+
+    .modal-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      font-size: 2rem;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      z-index: 10;
+    }
+
+    .modal-nav-btn:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .modal-nav-btn.prev {
+      left: 20px;
+    }
+
+    .modal-nav-btn.next {
+      right: 20px;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      font-size: 2rem;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      z-index: 10;
+    }
+
+    .modal-close-btn:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .image-counter {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 1rem;
+    }
+
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+    }
+
+    .category-card {
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border-radius: 12px;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .category-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .category-card-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .category-card-body {
+      padding: 1.5rem;
+      background: white;
+    }
+
+    .category-card-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+      text-transform: capitalize;
+    }
+
+    .category-card-count {
+      color: #6c757d;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    .back-button {
+      margin-bottom: 2rem;
+    }
+
+    .breadcrumb-nav {
+      margin-bottom: 2rem;
+    }
+
+    #gallery-container.categories-view .category-section {
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .modal-nav-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+      }
+
+      .modal-nav-btn.prev {
+        left: 10px;
+      }
+
+      .modal-nav-btn.next {
+        right: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid py-5">
+    <div class="container">
+      <h1 class="text-center mb-5">Resim Galerisi</h1>
+      <div id="breadcrumb-container" class="breadcrumb-nav" style="display: none;">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#" id="breadcrumb-home">Kategoriler</a></li>
+            <li class="breadcrumb-item active" id="breadcrumb-category" aria-current="page"></li>
+          </ol>
+        </nav>
+      </div>
+      <div id="back-button-container" class="back-button" style="display: none;">
+        <button class="btn btn-outline-primary" id="backToCategoriesBtn">
+          <i class="bi bi-arrow-left"></i> Kategorilere Dön
+        </button>
+      </div>
+      <div id="gallery-container">
+        <div class="loading-spinner">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Yükleniyor...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen Modal -->
+  <div class="modal fade modal-fullscreen" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content">
+        <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+        <div class="modal-image-container">
+          <img id="modalImage" src="" alt="Resim">
+          <button class="modal-nav-btn prev" id="prevBtn">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <button class="modal-nav-btn next" id="nextBtn">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+          <div class="image-counter">
+            <span id="imageCounter">1 / 1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Resim verileri (build-images.js ile otomatik oluşturulur) -->
+  <script src="images-data.js"></script>
+
+  <!-- Ana uygulama JavaScript -->
+  <script src="app.js"></script>
+</body>
+
+</html>

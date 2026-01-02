@@ -133,6 +133,12 @@ function renderCategory(category, images) {
   title.className = 'category-title';
   title.textContent = category;
 
+  // Slayt gösterisi butonu
+  const slideshowButton = document.createElement('button');
+  slideshowButton.className = 'slideshow-button';
+  slideshowButton.innerHTML = '<i class="bi bi-play-circle"></i> Slayt Gösterisi';
+  slideshowButton.addEventListener('click', () => startSlideshow(category, images));
+
   const row = document.createElement('div');
   row.className = 'gallery-row';
 
@@ -159,6 +165,7 @@ function renderCategory(category, images) {
   });
 
   section.appendChild(title);
+  section.appendChild(slideshowButton);
   section.appendChild(row);
   container.appendChild(section);
 }
@@ -221,14 +228,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Klavye ile gezinme
   document.addEventListener('keydown', (e) => {
-    const modal = bootstrap.Modal.getInstance(document.getElementById('imageModal'));
-    if (modal && modal._isShown) {
+    const imageModal = bootstrap.Modal.getInstance(document.getElementById('imageModal'));
+    const slideshowModalInstance = bootstrap.Modal.getInstance(document.getElementById('slideshowModal'));
+    
+    // Image modal kontrolü
+    if (imageModal && imageModal._isShown) {
       if (e.key === 'ArrowLeft') {
         showPreviousImage();
       } else if (e.key === 'ArrowRight') {
         showNextImage();
       } else if (e.key === 'Escape') {
-        modal.hide();
+        imageModal.hide();
+      }
+    }
+    
+    // Slideshow modal kontrolü
+    if (slideshowModalInstance && slideshowModalInstance._isShown) {
+      if (e.key === 'ArrowLeft') {
+        showPreviousSlideshowImage();
+        if (slideshowIsPlaying) {
+          startSlideshowAutoPlay();
+        }
+      } else if (e.key === 'ArrowRight') {
+        showNextSlideshowImage();
+        if (slideshowIsPlaying) {
+          startSlideshowAutoPlay();
+        }
+      } else if (e.key === ' ') {
+        e.preventDefault();
+        toggleSlideshowPlayPause();
+      } else if (e.key === 'Escape') {
+        stopSlideshowAutoPlay();
+        slideshowModalInstance.hide();
       }
     }
   });
@@ -265,4 +296,192 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Sayfa yüklendiğinde resim verilerini yükle
   loadImagesData();
+
+  // Slayt gösterisi event listeners
+  const slideshowModal = document.getElementById('slideshowModal');
+  const slideshowPrevBtn = document.getElementById('slideshowPrevBtn');
+  const slideshowNextBtn = document.getElementById('slideshowNextBtn');
+  const slideshowPlayPauseBtn = document.getElementById('slideshowPlayPauseBtn');
+  const slideshowCloseBtn = document.getElementById('slideshowCloseBtn');
+
+  // Önceki buton
+  slideshowPrevBtn.addEventListener('click', () => {
+    showPreviousSlideshowImage();
+    // Manuel geçişte otomatik oynatmayı yeniden başlat
+    if (slideshowIsPlaying) {
+      startSlideshowAutoPlay();
+    }
+  });
+
+  // Sonraki buton
+  slideshowNextBtn.addEventListener('click', () => {
+    showNextSlideshowImage();
+    // Manuel geçişte otomatik oynatmayı yeniden başlat
+    if (slideshowIsPlaying) {
+      startSlideshowAutoPlay();
+    }
+  });
+
+  // Oynat/Durdur buton
+  slideshowPlayPauseBtn.addEventListener('click', toggleSlideshowPlayPause);
+
+  // Kapat buton
+  slideshowCloseBtn.addEventListener('click', () => {
+    stopSlideshowAutoPlay();
+    const modal = bootstrap.Modal.getInstance(slideshowModal);
+    if (modal) {
+      modal.hide();
+    }
+  });
+
+  // Modal kapandığında temizlik yap
+  slideshowModal.addEventListener('hidden.bs.modal', () => {
+    stopSlideshowAutoPlay();
+    slideshowIsPlaying = true;
+    const playPauseIcon = document.getElementById('playPauseIcon');
+    playPauseIcon.className = 'bi bi-pause-fill';
+  });
+
+  // Klavye ile slayt gösterisi kontrolü
+  document.addEventListener('keydown', (e) => {
+    const slideshowModalInstance = bootstrap.Modal.getInstance(slideshowModal);
+    if (slideshowModalInstance && slideshowModalInstance._isShown) {
+      if (e.key === 'ArrowLeft') {
+        showPreviousSlideshowImage();
+        if (slideshowIsPlaying) {
+          startSlideshowAutoPlay();
+        }
+      } else if (e.key === 'ArrowRight') {
+        showNextSlideshowImage();
+        if (slideshowIsPlaying) {
+          startSlideshowAutoPlay();
+        }
+      } else if (e.key === ' ') {
+        e.preventDefault();
+        toggleSlideshowPlayPause();
+      } else if (e.key === 'Escape') {
+        stopSlideshowAutoPlay();
+        slideshowModalInstance.hide();
+      }
+    }
+  });
 });
+
+// Slayt gösterisi değişkenleri
+let slideshowInterval = null;
+let slideshowCurrentIndex = 0;
+let slideshowImages = [];
+let slideshowIsPlaying = true;
+let slideshowDuration = 3000; // 3 saniye
+
+// Slayt gösterisini başlat
+function startSlideshow(category, images) {
+  slideshowImages = images;
+  slideshowCurrentIndex = 0;
+  slideshowIsPlaying = true;
+
+  const modal = new bootstrap.Modal(document.getElementById('slideshowModal'));
+  const container = document.getElementById('slideshowContainer');
+  const counter = document.getElementById('slideshowCounter');
+  const playPauseIcon = document.getElementById('playPauseIcon');
+
+  // Container'ı temizle
+  container.innerHTML = '';
+
+  // Tüm resimleri ekle
+  images.forEach((image, index) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'slideshow-image-wrapper';
+    if (index === 0) {
+      wrapper.classList.add('active');
+    }
+
+    const img = document.createElement('img');
+    img.src = encodeURI(image.path);
+    img.alt = image.name;
+
+    wrapper.appendChild(img);
+    container.appendChild(wrapper);
+  });
+
+  // İlk resmi göster
+  updateSlideshowCounter();
+  modal.show();
+
+  // Otomatik geçişi başlat
+  startSlideshowAutoPlay();
+}
+
+// Slayt gösterisi otomatik oynatmayı başlat
+function startSlideshowAutoPlay() {
+  if (slideshowInterval) {
+    clearInterval(slideshowInterval);
+  }
+
+  if (slideshowIsPlaying) {
+    slideshowInterval = setInterval(() => {
+      showNextSlideshowImage();
+    }, slideshowDuration);
+  }
+}
+
+// Slayt gösterisi otomatik oynatmayı durdur
+function stopSlideshowAutoPlay() {
+  if (slideshowInterval) {
+    clearInterval(slideshowInterval);
+    slideshowInterval = null;
+  }
+}
+
+// Sonraki slayt gösterisi resmini göster
+function showNextSlideshowImage() {
+  if (slideshowCurrentIndex < slideshowImages.length - 1) {
+    slideshowCurrentIndex++;
+  } else {
+    slideshowCurrentIndex = 0; // Başa dön
+  }
+  updateSlideshowImage();
+}
+
+// Önceki slayt gösterisi resmini göster
+function showPreviousSlideshowImage() {
+  if (slideshowCurrentIndex > 0) {
+    slideshowCurrentIndex--;
+  } else {
+    slideshowCurrentIndex = slideshowImages.length - 1; // Sona git
+  }
+  updateSlideshowImage();
+}
+
+// Slayt gösterisi resmini güncelle
+function updateSlideshowImage() {
+  const wrappers = document.querySelectorAll('.slideshow-image-wrapper');
+  wrappers.forEach((wrapper, index) => {
+    wrapper.classList.remove('active');
+    if (index === slideshowCurrentIndex) {
+      wrapper.classList.add('active');
+    }
+  });
+  updateSlideshowCounter();
+}
+
+// Slayt gösterisi sayacını güncelle
+function updateSlideshowCounter() {
+  const counter = document.getElementById('slideshowCounter');
+  counter.textContent = `${slideshowCurrentIndex + 1} / ${slideshowImages.length}`;
+}
+
+// Slayt gösterisi oynat/durdur
+function toggleSlideshowPlayPause() {
+  slideshowIsPlaying = !slideshowIsPlaying;
+  const playPauseIcon = document.getElementById('playPauseIcon');
+
+  if (slideshowIsPlaying) {
+    playPauseIcon.className = 'bi bi-pause-fill';
+    startSlideshowAutoPlay();
+  } else {
+    playPauseIcon.className = 'bi bi-play-fill';
+    stopSlideshowAutoPlay();
+  }
+}
+

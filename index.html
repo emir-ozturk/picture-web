@@ -251,6 +251,120 @@
       font-size: 1rem;
     }
 
+    .slideshow-button {
+      background-color: #e50914;
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      margin-bottom: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .slideshow-button:hover {
+      background-color: #f40612;
+      transform: scale(1.05);
+    }
+
+    .slideshow-button i {
+      font-size: 1.2rem;
+    }
+
+    .slideshow-modal {
+      background-color: rgba(0, 0, 0, 0.98);
+    }
+
+    .slideshow-modal .modal-content {
+      background: transparent;
+      border: none;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .slideshow-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .slideshow-image-wrapper {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .slideshow-image-wrapper.active {
+      opacity: 1;
+      z-index: 1;
+    }
+
+    .slideshow-image-wrapper img {
+      max-width: 100%;
+      max-height: 100vh;
+      object-fit: contain;
+    }
+
+    .slideshow-controls {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      z-index: 10;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 15px 25px;
+      border-radius: 30px;
+    }
+
+    .slideshow-control-btn {
+      background-color: transparent;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 50%;
+      transition: background-color 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slideshow-control-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .slideshow-control-btn.play-pause {
+      width: 50px;
+      height: 50px;
+    }
+
+    .slideshow-info {
+      color: white;
+      font-size: 1rem;
+      padding: 0 10px;
+    }
+
     .loading-spinner {
       display: flex;
       justify-content: center;
@@ -410,6 +524,34 @@
           </button>
           <div class="image-counter">
             <span id="imageCounter">1 / 1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slideshow Modal -->
+  <div class="modal fade slideshow-modal" id="slideshowModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content">
+        <button type="button" class="modal-close-btn" id="slideshowCloseBtn" aria-label="Close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+        <div class="slideshow-container" id="slideshowContainer">
+          <!-- Images will be dynamically inserted here -->
+        </div>
+        <div class="slideshow-controls">
+          <button class="slideshow-control-btn" id="slideshowPrevBtn">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <button class="slideshow-control-btn play-pause" id="slideshowPlayPauseBtn">
+            <i class="bi bi-pause-fill" id="playPauseIcon"></i>
+          </button>
+          <button class="slideshow-control-btn" id="slideshowNextBtn">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+          <div class="slideshow-info">
+            <span id="slideshowCounter">1 / 1</span>
           </div>
         </div>
       </div>

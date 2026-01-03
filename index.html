@@ -183,6 +183,11 @@
       width: 100vw;
       height: 100vh;
       object-fit: cover;
+      transition: object-fit 0.3s ease;
+    }
+
+    .modal-image-container img.original-size {
+      object-fit: contain;
     }
 
     .modal-nav-btn {
@@ -252,6 +257,8 @@
       display: flex;
       align-items: center;
       gap: 12px;
+      cursor: pointer;
+      user-select: none;
     }
 
     .slideshow-play-icon {

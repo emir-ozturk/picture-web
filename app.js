@@ -5,6 +5,7 @@ let currentCategory = '';
 let currentImageIndex = 0;
 let currentImages = [];
 let isCategoryView = true;
+let isImageFullscreen = true; // Resim görüntüleme modu: true = tam ekran, false = orijinal boyut
 
 // Resim ve video verilerini yükle
 function loadImagesData() {
@@ -253,11 +254,27 @@ function updateModalImage() {
   modalImage.src = encodeURI(image.path);
   imageCounter.textContent = `${currentImageIndex + 1} / ${currentImages.length}`;
 
+  // Resim görüntüleme modunu sıfırla (her yeni resimde tam ekran)
+  isImageFullscreen = true;
+  modalImage.classList.remove('original-size');
+
   // Önceki/Sonraki butonlarını güncelle
   document.getElementById('prevBtn').style.display =
     currentImageIndex > 0 ? 'flex' : 'none';
   document.getElementById('nextBtn').style.display =
     currentImageIndex < currentImages.length - 1 ? 'flex' : 'none';
+}
+
+// Resim görüntüleme modunu değiştir (orijinal boyut <-> tam ekran)
+function toggleImageSize() {
+  const modalImage = document.getElementById('modalImage');
+  isImageFullscreen = !isImageFullscreen;
+  
+  if (isImageFullscreen) {
+    modalImage.classList.remove('original-size');
+  } else {
+    modalImage.classList.add('original-size');
+  }
 }
 
 // Önceki resim
@@ -285,13 +302,24 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     showCategories();
   });
-  document.getElementById('modalSlideshowBtn').addEventListener('click', () => {
+  document.getElementById('modalSlideshowBtn').addEventListener('click', (e) => {
+    e.stopPropagation(); // image-counter'ın click event'ini tetiklemesin
     if (currentCategory && currentImages.length > 0) {
       const imageModal = bootstrap.Modal.getInstance(document.getElementById('imageModal'));
       if (imageModal) {
         imageModal.hide();
       }
       startSlideshow(currentCategory, currentImages, currentImageIndex);
+    }
+  });
+
+  // Alttaki kontrol çubuğuna tıklama ile resim boyutunu değiştir
+  const imageCounterContainer = document.getElementById('imageCounter').parentElement;
+  imageCounterContainer.addEventListener('click', (e) => {
+    // modalSlideshowBtn veya onun child elementlerine tıklanmadıysa toggle yap
+    const slideshowBtn = document.getElementById('modalSlideshowBtn');
+    if (!slideshowBtn.contains(e.target) && e.target !== slideshowBtn) {
+      toggleImageSize();
     }
   });
 

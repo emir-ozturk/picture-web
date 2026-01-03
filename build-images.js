@@ -2,10 +2,12 @@ const fs = require('fs');
 const path = require('path');
 
 const PICTURE_DIR = path.join(__dirname, 'Picture');
+const VIDEO_DIR = path.join(__dirname, 'Video');
 const OUTPUT_FILE = path.join(__dirname, 'images-data.js');
 
 /**
  * Picture klasöründeki tüm klasörleri ve resimleri tarar
+ * Video klasöründeki videoları tarar
  * ve images-data.js dosyasını oluşturur
  */
 function buildImagesData() {
@@ -59,18 +61,55 @@ function buildImagesData() {
     }
   });
 
+  // Video klasörünü tara
+  let videosData = [];
+  if (fs.existsSync(VIDEO_DIR)) {
+    console.log('\nVideo klasörü taranıyor...');
+    try {
+      const videoFiles = fs.readdirSync(VIDEO_DIR);
+
+      // Sadece video dosyalarını filtrele
+      const videoFilesFiltered = videoFiles.filter(file => {
+        const ext = path.extname(file).toLowerCase();
+        return ['.mp4', '.webm', '.ogg', '.mov'].includes(ext);
+      });
+
+      // Her video için bilgi oluştur
+      videoFilesFiltered.forEach(file => {
+        videosData.push({
+          name: file,
+          path: `Video/${file}`
+        });
+      });
+
+      // Alfabetik sırala
+      videosData.sort((a, b) => a.name.localeCompare(b.name));
+
+      if (videosData.length > 0) {
+        console.log(`  ${videosData.length} video bulundu`);
+      }
+    } catch (error) {
+      console.warn(`  Video klasörü okunamadı:`, error.message);
+    }
+  }
+
   // JavaScript dosyası oluştur
   const jsContent = `// Bu dosya otomatik olarak oluşturulmuştur
-// Picture klasöründeki resimleri tarayarak build-images.js scripti ile oluşturulur
-// Yeni resim ekledikten sonra: node build-images.js
+// Picture klasöründeki resimleri ve Video klasöründeki videoları tarayarak build-images.js scripti ile oluşturulur
+// Yeni resim veya video ekledikten sonra: node build-images.js
 
 const allImagesData = ${JSON.stringify(allImagesData, null, 2)};
+
+const allVideosData = ${JSON.stringify(videosData, null, 2)};
 `;
 
   fs.writeFileSync(OUTPUT_FILE, jsContent, 'utf8');
 
   const totalImages = Object.values(allImagesData).reduce((sum, images) => sum + images.length, 0);
   console.log(`\n✓ Toplam ${Object.keys(allImagesData).length} kategori, ${totalImages} resim bulundu`);
+  if (videosData.length > 0) {
+    console.log(`✓ ${videosData.length} video bulundu`);
+  }
   console.log(`✓ ${OUTPUT_FILE} dosyası oluşturuldu`);
 }
 

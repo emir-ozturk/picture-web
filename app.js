@@ -1,15 +1,19 @@
 // Tüm resimleri ve kategorileri tutan global değişkenler
 let allImages = {};
+let allVideos = [];
 let currentCategory = '';
 let currentImageIndex = 0;
 let currentImages = [];
 let isCategoryView = true;
 
-// Resim verilerini yükle
+// Resim ve video verilerini yükle
 function loadImagesData() {
-  // images-data.js dosyası script tag ile yüklendiği için allImagesData global olarak mevcut
+  // images-data.js dosyası script tag ile yüklendiği için allImagesData ve allVideosData global olarak mevcut
   if (typeof allImagesData !== 'undefined' && allImagesData) {
     allImages = allImagesData;
+    if (typeof allVideosData !== 'undefined' && allVideosData) {
+      allVideos = allVideosData;
+    }
     loadGallery();
   } else {
     console.error('images-data.js dosyası yüklenemedi. Lütfen build scriptini çalıştırın: node build-images.js');
@@ -97,6 +101,62 @@ function showCategories() {
   section.appendChild(title);
   section.appendChild(row);
   container.appendChild(section);
+
+  // Videoları göster
+  if (allVideos && allVideos.length > 0) {
+    const videoSection = document.createElement('div');
+    videoSection.className = 'category-section';
+
+    const videoTitle = document.createElement('h2');
+    videoTitle.className = 'category-title';
+    videoTitle.textContent = 'Videolar';
+
+    const videoRow = document.createElement('div');
+    videoRow.className = 'category-row';
+
+    allVideos.forEach((video, index) => {
+      const videoCard = document.createElement('div');
+      videoCard.className = 'video-card';
+      videoCard.addEventListener('click', () => openVideoModal(video));
+
+      // Video thumbnail için video elementini kullan
+      const videoThumbnail = document.createElement('video');
+      videoThumbnail.className = 'video-card-thumbnail';
+      videoThumbnail.src = encodeURI(video.path);
+      videoThumbnail.muted = true;
+      videoThumbnail.preload = 'metadata';
+      videoThumbnail.playsInline = true;
+
+      // İlk frame'i göstermek için video yüklendiğinde currentTime ayarla
+      videoThumbnail.addEventListener('loadedmetadata', () => {
+        videoThumbnail.currentTime = 0.1;
+      });
+
+      videoThumbnail.addEventListener('loadeddata', () => {
+        videoThumbnail.currentTime = 0.1;
+      });
+
+      const overlay = document.createElement('div');
+      overlay.className = 'video-card-overlay';
+
+      const playIcon = document.createElement('i');
+      playIcon.className = 'bi bi-play-circle-fill video-play-icon';
+
+      const cardTitle = document.createElement('h3');
+      cardTitle.className = 'video-card-title';
+      cardTitle.textContent = video.name.replace(/\.[^/.]+$/, ''); // Uzantıyı kaldır
+
+      overlay.appendChild(playIcon);
+      videoCard.appendChild(videoThumbnail);
+      videoCard.appendChild(overlay);
+      videoCard.appendChild(cardTitle);
+      videoRow.appendChild(videoCard);
+    });
+
+    videoSection.appendChild(videoTitle);
+    videoSection.appendChild(videoRow);
+    container.appendChild(videoSection);
+  }
 }
 
 // Kategori resimlerini göster
@@ -230,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (e) => {
     const imageModal = bootstrap.Modal.getInstance(document.getElementById('imageModal'));
     const slideshowModalInstance = bootstrap.Modal.getInstance(document.getElementById('slideshowModal'));
-    
+
     // Image modal kontrolü
     if (imageModal && imageModal._isShown) {
       if (e.key === 'ArrowLeft') {
@@ -241,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         imageModal.hide();
       }
     }
-    
+
     // Slideshow modal kontrolü
     if (slideshowModalInstance && slideshowModalInstance._isShown) {
       if (e.key === 'ArrowLeft') {
@@ -293,6 +353,18 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
+
+  // Video modal kapat butonu
+  const videoCloseBtn = document.getElementById('videoCloseBtn');
+  videoCloseBtn.addEventListener('click', () => {
+    const videoElement = document.getElementById('modalVideo');
+    videoElement.pause();
+    videoElement.src = '';
+    const modal = bootstrap.Modal.getInstance(document.getElementById('videoModal'));
+    if (modal) {
+      modal.hide();
+    }
+  });
 
   // Sayfa yüklendiğinde resim verilerini yükle
   loadImagesData();
@@ -483,5 +555,24 @@ function toggleSlideshowPlayPause() {
     playPauseIcon.className = 'bi bi-play-fill';
     stopSlideshowAutoPlay();
   }
+}
+
+// Video modal'ı aç
+function openVideoModal(video) {
+  const modal = new bootstrap.Modal(document.getElementById('videoModal'));
+  const videoElement = document.getElementById('modalVideo');
+
+  // Video kaynağını ayarla
+  videoElement.src = encodeURI(video.path);
+
+  // Modal kapandığında videoyu durdur
+  const videoModalElement = document.getElementById('videoModal');
+  videoModalElement.addEventListener('hidden.bs.modal', function onVideoModalClose() {
+    videoElement.pause();
+    videoElement.src = '';
+    videoModalElement.removeEventListener('hidden.bs.modal', onVideoModalClose);
+  }, { once: true });
+
+  modal.show();
 }
 

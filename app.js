@@ -285,6 +285,15 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     showCategories();
   });
+  document.getElementById('modalSlideshowBtn').addEventListener('click', () => {
+    if (currentCategory && currentImages.length > 0) {
+      const imageModal = bootstrap.Modal.getInstance(document.getElementById('imageModal'));
+      if (imageModal) {
+        imageModal.hide();
+      }
+      startSlideshow(currentCategory, currentImages, currentImageIndex);
+    }
+  });
 
   // Klavye ile gezinme
   document.addEventListener('keydown', (e) => {
@@ -447,9 +456,9 @@ let slideshowIsPlaying = true;
 let slideshowDuration = 3000; // 3 saniye
 
 // Slayt gösterisini başlat
-function startSlideshow(category, images) {
+function startSlideshow(category, images, startIndex = 0) {
   slideshowImages = images;
-  slideshowCurrentIndex = 0;
+  slideshowCurrentIndex = startIndex >= 0 && startIndex < images.length ? startIndex : 0;
   slideshowIsPlaying = true;
 
   const modal = new bootstrap.Modal(document.getElementById('slideshowModal'));
@@ -464,7 +473,7 @@ function startSlideshow(category, images) {
   images.forEach((image, index) => {
     const wrapper = document.createElement('div');
     wrapper.className = 'slideshow-image-wrapper';
-    if (index === 0) {
+    if (index === slideshowCurrentIndex) {
       wrapper.classList.add('active');
     }
 
@@ -476,7 +485,7 @@ function startSlideshow(category, images) {
     container.appendChild(wrapper);
   });
 
-  // İlk resmi göster
+  // Seçili resmi göster
   updateSlideshowCounter();
   modal.show();
 

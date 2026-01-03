@@ -249,6 +249,32 @@
       padding: 10px 20px;
       border-radius: 25px;
       font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .slideshow-play-icon {
+      background: transparent;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.3s ease, transform 0.2s ease;
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .slideshow-play-icon:hover {
+      color: #e50914;
+      transform: scale(1.1);
+    }
+
+    .slideshow-play-icon i {
+      font-size: 1.2rem;
     }
 
     .slideshow-button {
@@ -572,6 +598,10 @@
       .modal-nav-btn.next {
         right: 10px;
       }
+
+      .slideshow-play-icon i {
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
@@ -620,6 +650,9 @@
           </button>
           <div class="image-counter">
             <span id="imageCounter">1 / 1</span>
+            <button class="slideshow-play-icon" id="modalSlideshowBtn" title="Slayt Gösterisi">
+              <i class="bi bi-play-circle"></i>
+            </button>
           </div>
         </div>
       </div>
